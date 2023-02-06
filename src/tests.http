@@ -1,4 +1,8 @@
-GET http://localhost:8000/
+GET http://localhost:8000/hello/andrew
+
+###
+
+PUT http://localhost:8000/api/facts/user1&1/upvote
 
 ###
 

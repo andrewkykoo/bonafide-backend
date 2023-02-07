@@ -1,4 +1,4 @@
-GET http://localhost:8000/api/facts/fact2
+GET http://localhost:8000/api/facts/fact1
 
 ###
 
@@ -6,10 +6,10 @@ PUT http://localhost:8000/api/facts/fact1/upvote
 
 ###
 
-POST http://localhost:8000/api/facts/user1&2/comments
+POST http://localhost:8000/api/facts/fact1/comments
 content-type: application/json
 
 {
-    "postedBy": "james",
-    "text": "this is biased.."
+    "postedBy": "emma",
+    "text": "Hmm.. I have a different standpoint"
 }

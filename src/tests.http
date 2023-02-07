@@ -2,11 +2,11 @@ GET http://localhost:8000/api/facts/Billionaire%20Charles%20Koch-Backed%20Group%
 
 ###
 
-PUT http://localhost:8000/api/facts/fact1/upvote
+PUT http://localhost:8000/api/facts/Billionaire%20Charles%20Koch-Backed%20Group%20Will%20Push%20GOP%20to%20Move%20Past%20Donald%20Trump/upvote
 
 ###
 
-POST http://localhost:8000/api/facts/fact1/comments
+POST http://localhost:8000/api/facts/Billionaire%20Charles%20Koch-Backed%20Group%20Will%20Push%20GOP%20to%20Move%20Past%20Donald%20Trump/comments
 content-type: application/json
 
 {

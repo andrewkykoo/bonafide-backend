@@ -22,7 +22,12 @@ app.get('/api/facts/:title', async (req, res) => {
 });
 
 app.put('/api/facts/:title/upvote', async (req, res) => {
-  const { title } = req.params;
+  let { title } = req.params;
+
+  title = title
+    .split('')
+    .map((c) => (c === ' ' ? '%20' : c))
+    .join('');
 
   await db.collection('facts').updateOne(
     { title },
@@ -41,7 +46,13 @@ app.put('/api/facts/:title/upvote', async (req, res) => {
 });
 
 app.post('/api/facts/:title/comments', async (req, res) => {
-  const { title } = req.params;
+  let { title } = req.params;
+
+  title = title
+    .split('')
+    .map((c) => (c === ' ' ? '%20' : c))
+    .join('');
+
   const { postedBy, text } = req.body;
 
   await db

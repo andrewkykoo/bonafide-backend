@@ -6,9 +6,10 @@ PUT http://localhost:8000/api/facts/user1&1/upvote
 
 ###
 
-POST http://localhost:8000/
+POST http://localhost:8000/api/facts/user1&2/comments
 content-type: application/json
 
 {
-    "name": "andrew"
+    "postedBy": "joanna",
+    "text": "great information!"
 }

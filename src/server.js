@@ -5,16 +5,19 @@ let factsInfo = [
     username: 'user1',
     number: '1',
     upvotes: 0,
+    comments: [],
   },
   {
     username: 'user1',
     number: 2,
     upvotes: 0,
+    comments: [],
   },
   {
     username: 'user2',
     number: 1,
     upvotes: 0,
+    comments: [],
   },
 ];
 
@@ -37,14 +40,21 @@ app.put('/api/facts/:usernameAndnumber/upvote', (req, res) => {
   }
 });
 
-// app.get('/hello/:name', (req, res) => {
-//   const { name } = req.params;
-//   res.send(`hello ${name}`);
-// });
+app.post('/api/facts/:usernameAndnumber/comments', (req, res) => {
+  const { usernameAndnumber } = req.params;
+  const { postedBy, text } = req.body;
 
-// app.post('/', (req, res) => {
-//   res.send(`hi ${req.body.name}`);
-// });
+  const fact = factsInfo.find(
+    (fact) => `${fact.username}&${fact.number}` === usernameAndnumber
+  );
+
+  if (fact) {
+    fact.comments.push({ postedBy, text });
+    res.send(fact.comments);
+  } else {
+    res.send("the article doesn't exist");
+  }
+});
 
 app.listen(8000, () => {
   console.log('server listening on port 8000');

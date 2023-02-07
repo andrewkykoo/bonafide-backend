@@ -30,7 +30,7 @@ app.put('/api/facts/:usernameAndnumber/upvote', (req, res) => {
   if (fact) {
     fact.upvotes += 1;
     res.send(
-      `${fact.username}'s number ${fact.number} article now has ${fact.upvotes} upvotes`
+      `${fact.username}'s number ${fact.number} article now has ${fact.upvotes} upvotes!`
     );
   } else {
     res.send("the article doesn't exist");

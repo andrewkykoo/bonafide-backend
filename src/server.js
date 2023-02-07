@@ -5,7 +5,12 @@ const app = express();
 app.use(express.json());
 
 app.get('/api/facts/:title', async (req, res) => {
-  const { title } = req.params;
+  let { title } = req.params;
+
+  title = title
+    .split('')
+    .map((c) => (c === ' ' ? '%20' : c))
+    .join('');
 
   const fact = await db.collection('facts').findOne({ title });
 

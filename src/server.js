@@ -10,6 +10,20 @@ admin.initializeApp({ credential: admin.credential.cert(credentials) });
 const app = express();
 app.use(express.json());
 
+app.use(async (req, res, next) => {
+  const { authtoken } = req.headers;
+
+  if (authtoken) {
+    try {
+      req.user = await admin.auth().verifyIdToken(authtoken);
+    } catch (error) {
+      res.sendStatus(400);
+    }
+  }
+
+  next();
+});
+
 app.get('/api/facts/:title', async (req, res) => {
   let { title } = req.params;
 

@@ -1,15 +1,15 @@
-GET http://localhost:8000/hello/andrew
+GET http://localhost:8000/api/facts/Billionaire%20Charles%20Koch-Backed%20Group%20Will%20Push%20GOP%20to%20Move%20Past%20Donald%20Trump
 
 ###
 
-PUT http://localhost:8000/api/facts/user1&1/upvote
+PUT http://localhost:8000/api/facts/Billionaire%20Charles%20Koch-Backed%20Group%20Will%20Push%20GOP%20to%20Move%20Past%20Donald%20Trump/upvote
 
 ###
 
-POST http://localhost:8000/api/facts/user1&2/comments
+POST http://localhost:8000/api/facts/Billionaire%20Charles%20Koch-Backed%20Group%20Will%20Push%20GOP%20to%20Move%20Past%20Donald%20Trump/comments
 content-type: application/json
 
 {
-    "postedBy": "joanna",
-    "text": "great information!"
+    "postedBy": "emma",
+    "text": "Hmm.. I have a different standpoint"
 }

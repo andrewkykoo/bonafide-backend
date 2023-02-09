@@ -1,61 +1,76 @@
 import express from 'express';
-
-let factsInfo = [
-  {
-    username: 'user1',
-    number: '1',
-    upvotes: 0,
-    comments: [],
-  },
-  {
-    username: 'user1',
-    number: 2,
-    upvotes: 0,
-    comments: [],
-  },
-  {
-    username: 'user2',
-    number: 1,
-    upvotes: 0,
-    comments: [],
-  },
-];
+import { db, connectToDb } from './db.js';
 
 const app = express();
 app.use(express.json());
 
-app.put('/api/facts/:usernameAndnumber/upvote', (req, res) => {
-  const { usernameAndnumber } = req.params;
+app.get('/api/facts/:title', async (req, res) => {
+  let { title } = req.params;
 
-  const fact = factsInfo.find(
-    (fact) => `${fact.username}&${fact.number}` === usernameAndnumber
-  );
+  title = title
+    .split('')
+    .map((c) => (c === ' ' ? '%20' : c))
+    .join('');
+
+  const fact = await db.collection('facts').findOne({ title });
+
   if (fact) {
-    fact.upvotes += 1;
-    res.send(
-      `${fact.username}'s number ${fact.number} article now has ${fact.upvotes} upvotes!`
-    );
+    res.json(fact);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+app.put('/api/facts/:title/upvote', async (req, res) => {
+  let { title } = req.params;
+
+  title = title
+    .split('')
+    .map((c) => (c === ' ' ? '%20' : c))
+    .join('');
+
+  await db.collection('facts').updateOne(
+    { title },
+    {
+      $inc: { upvotes: 1 },
+    }
+  );
+
+  const fact = await db.collection('facts').findOne({ title });
+
+  if (fact) {
+    res.send(`The fact "${fact.title}" now has ${fact.upvotes} upvotes!`);
   } else {
     res.send("the article doesn't exist");
   }
 });
 
-app.post('/api/facts/:usernameAndnumber/comments', (req, res) => {
-  const { usernameAndnumber } = req.params;
+app.post('/api/facts/:title/comments', async (req, res) => {
+  let { title } = req.params;
+
+  title = title
+    .split('')
+    .map((c) => (c === ' ' ? '%20' : c))
+    .join('');
+
   const { postedBy, text } = req.body;
 
-  const fact = factsInfo.find(
-    (fact) => `${fact.username}&${fact.number}` === usernameAndnumber
-  );
+  await db
+    .collection('facts')
+    .updateOne({ title }, { $push: { comments: { postedBy, text } } });
+
+  const fact = await db.collection('facts').findOne({ title });
 
   if (fact) {
-    fact.comments.push({ postedBy, text });
     res.send(fact.comments);
   } else {
     res.send("the article doesn't exist");
   }
 });
 
-app.listen(8000, () => {
-  console.log('server listening on port 8000');
+connectToDb(() => {
+  console.log('successfully connected to database');
+  app.listen(8000, () => {
+    console.log('server listening on port 8000');
+  });
 });

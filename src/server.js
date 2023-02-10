@@ -26,6 +26,7 @@ app.use(async (req, res, next) => {
 
 app.get('/api/facts/:title', async (req, res) => {
   let { title } = req.params;
+  const { uid } = req.user;
 
   title = title
     .split('')
@@ -35,49 +36,67 @@ app.get('/api/facts/:title', async (req, res) => {
   const fact = await db.collection('facts').findOne({ title });
 
   if (fact) {
+    const upvoteIds = fact.upvoteIds || [];
+    fact.canUpvote = uid && !upvoteIds.includes(uid);
     res.json(fact);
   } else {
     res.sendStatus(404);
   }
 });
 
+app.use((req, res, next) => {
+  if (req.user) {
+    next();
+  } else {
+    res.sendStatus(401);
+  }
+});
+
 app.put('/api/facts/:title/upvote', async (req, res) => {
   let { title } = req.params;
+  const { uid } = req.user;
 
   title = title
     .split('')
     .map((c) => (c === ' ' ? '%20' : c))
     .join('');
 
-  await db.collection('facts').updateOne(
-    { title },
-    {
-      $inc: { upvotes: 1 },
-    }
-  );
-
-  const fact = await db.collection('facts').findOne({ title });
+  const fact = await db.collection('facts').findOne({ name });
 
   if (fact) {
-    res.send(`The fact "${fact.title}" now has ${fact.upvotes} upvotes!`);
-  } else {
-    res.send("the article doesn't exist");
+    const upvoteIds = fact.upvoteIds || [];
+    const canUpvote = uid && !upvoteIds.includes(uid);
+
+    if (canUpvote) {
+      await db.collection('facts').updateOne(
+        { title },
+        {
+          $inc: { upvotes: 1 },
+          $push: { upvoteIds: uid },
+        }
+      );
+    } else {
+      res.send("the article doesn't exist");
+    }
   }
+
+  const updatedFact = await db.collection('facts').findOne({ title });
+  res.send(updatedFact);
 });
 
 app.post('/api/facts/:title/comments', async (req, res) => {
   let { title } = req.params;
+  const { text } = req.body;
+  const { email } = req.user;
 
   title = title
     .split('')
     .map((c) => (c === ' ' ? '%20' : c))
     .join('');
 
-  const { postedBy, text } = req.body;
-
   await db
     .collection('facts')
-    .updateOne({ title }, { $push: { comments: { postedBy, text } } });
+    .updateOne({ title }, { $push: { comments: { email, text } } });
 
   const fact = await db.collection('facts').findOne({ title });
 

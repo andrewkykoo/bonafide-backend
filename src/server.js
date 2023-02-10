@@ -64,20 +64,7 @@ app.put('/api/facts/:title/upvote', async (req, res) => {
   const fact = await db.collection('facts').findOne({ name });
 
   if (fact) {
-    const upvoteIds = fact.upvoteIds || [];
-    const canUpvote = uid && !upvoteIds.includes(uid);
 
-    if (canUpvote) {
-      await db.collection('facts').updateOne(
-        { title },
-        {
-          $inc: { upvotes: 1 },
-          $push: { upvoteIds: uid },
-        }
-      );
-    } else {
-      res.send("the article doesn't exist");
-    }
   }
 
   const updatedFact = await db.collection('facts').findOne({ title });
@@ -101,7 +88,7 @@ app.post('/api/facts/:title/comments', async (req, res) => {
   const fact = await db.collection('facts').findOne({ title });
 
   if (fact) {
-    res.send(fact.comments);
+    res.json(fact);
   } else {
     res.send("the article doesn't exist");
   }

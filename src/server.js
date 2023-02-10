@@ -39,7 +39,7 @@ app.put('/api/facts/:title/upvote', async (req, res) => {
   const fact = await db.collection('facts').findOne({ title });
 
   if (fact) {
-    res.send(`The fact "${fact.title}" now has ${fact.upvotes} upvotes!`);
+    res.json(fact);
   } else {
     res.send("the article doesn't exist");
   }
@@ -62,7 +62,7 @@ app.post('/api/facts/:title/comments', async (req, res) => {
   const fact = await db.collection('facts').findOne({ title });
 
   if (fact) {
-    res.send(fact.comments);
+    res.json(fact);
   } else {
     res.send("the article doesn't exist");
   }

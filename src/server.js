@@ -3,7 +3,7 @@ import admin from 'firebase-admin';
 import express from 'express';
 import { db, connectToDb } from './db.js';
 
-const credentials = JSON.parse(fs.readFileSync('../credentials.json'));
+const credentials = JSON.parse(fs.readFileSync('./credentials.json'));
 
 admin.initializeApp({ credential: admin.credential.cert(credentials) });
 
@@ -17,9 +17,11 @@ app.use(async (req, res, next) => {
     try {
       req.user = await admin.auth().verifyIdToken(authtoken);
     } catch (error) {
-      res.sendStatus(400);
+      return res.sendStatus(400);
     }
   }
+
+  req.user = req.user || {};
 
   next();
 });
@@ -61,14 +63,26 @@ app.put('/api/facts/:title/upvote', async (req, res) => {
     .map((c) => (c === ' ' ? '%20' : c))
     .join('');
 
-  const fact = await db.collection('facts').findOne({ name });
+  const fact = await db.collection('facts').findOne({ title });
 
   if (fact) {
+    const upvoteIds = fact.upvoteIds || [];
+    const canUpvote = uid && !upvoteIds.includes(uid);
 
+    if (canUpvote) {
+      await db.collection('facts').updateOne(
+        { title },
+        {
+          $inc: { upvotes: 1 },
+          $push: { upvoteIds: uid },
+        }
+      );
+    }
+    const updatedFact = await db.collection('facts').findOne({ title });
+    res.send(updatedFact);
+  } else {
+    res.send('article does not exist');
   }
-
-  const updatedFact = await db.collection('facts').findOne({ title });
-  res.send(updatedFact);
 });
 
 app.post('/api/facts/:title/comments', async (req, res) => {

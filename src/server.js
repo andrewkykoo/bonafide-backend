@@ -1,7 +1,12 @@
 import fs from 'fs';
 import admin from 'firebase-admin';
+import path from 'path';
 import express from 'express';
 import { db, connectToDb } from './db.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const credentials = JSON.parse(fs.readFileSync('./credentials.json'));
 
@@ -9,9 +14,13 @@ admin.initializeApp({ credential: admin.credential.cert(credentials) });
 
 const app = express();
 app.use(express.json());
+app.use(express.static(path.join(__dirname, '../build')));
+
+app.get(/^(?!\/api).+/, (req, res) => {
+  res.sendFile(path.join(__dirname, '../build/index.html'));
+});
 
 app.use(async (req, res, next) => {
-  console.log(req.headers);
   const { authtoken } = req.headers;
 
   if (authtoken) {
@@ -109,9 +118,11 @@ app.post('/api/facts/:title/comments', async (req, res) => {
   }
 });
 
+const PORT = process.env.PORT || 8000;
+
 connectToDb(() => {
   console.log('successfully connected to database');
-  app.listen(8000, () => {
-    console.log('server listening on port 8000');
+  app.listen(PORT, () => {
+    console.log(`server listening on port ${PORT}`);
   });
 });

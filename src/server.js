@@ -11,6 +11,7 @@ const app = express();
 app.use(express.json());
 
 app.use(async (req, res, next) => {
+  console.log(req.headers);
   const { authtoken } = req.headers;
 
   if (authtoken) {
@@ -79,7 +80,7 @@ app.put('/api/facts/:title/upvote', async (req, res) => {
       );
     }
     const updatedFact = await db.collection('facts').findOne({ title });
-    res.send(updatedFact);
+    res.json(updatedFact);
   } else {
     res.send('article does not exist');
   }

@@ -97,7 +97,7 @@ app.post('/api/facts/:title/comments', async (req, res) => {
 
   await db
     .collection('facts')
-    .updateOne({ title }, { $push: { comments: { email, text } } });
+    .updateOne({ title }, { $push: { comments: { postedBy: email, text } } });
 
   const fact = await db.collection('facts').findOne({ title });
 

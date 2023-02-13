@@ -4,6 +4,7 @@ import path from 'path';
 import express from 'express';
 import { db, connectToDb } from './db.js';
 import { fileURLToPath } from 'url';
+import 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

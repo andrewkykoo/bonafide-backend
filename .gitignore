@@ -2,3 +2,4 @@
 /credentials.json
 build
 mongo-db-data
+.env
